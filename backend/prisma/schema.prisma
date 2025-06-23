@@ -1,0 +1,45 @@
+// Prisma schema defining the User model for LearnWise.
+// This is kept minimal for demonstration purposes.
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Generator to create Prisma Client
+// used by our Node.js server to talk to the DB.
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  username String   @unique
+  email    String   @unique
+  password String
+  age      Int
+  interest String
+  progress Int      @default(0)
+}
+
+// Topics that users can learn. Each topic includes text for different
+// difficulty levels and may have many related quiz questions.
+model Topic {
+  id          Int    @id @default(autoincrement())
+  title       String
+  beginner    String
+  intermediate String
+  expert      String
+  quizzes     Quiz[]
+}
+
+// Quiz questions linked to a topic. Options are stored as a JSON string for
+// simplicity in this demo.
+model Quiz {
+  id       Int    @id @default(autoincrement())
+  question String
+  options  String
+  answer   String
+  topic    Topic  @relation(fields: [topicId], references: [id])
+  topicId  Int
+}
